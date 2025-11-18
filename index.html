@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Editor de level.dat</title>
+    <style>
+      :root {
+        --bg: #060712;
+        --bg-elevated: #101322;
+        --bg-card: #141726;
+        --accent: #4f8cff;
+        --accent-soft: rgba(79, 140, 255, 0.12);
+        --border-subtle: #252842;
+        --text-main: #f5f5ff;
+        --text-muted: #a2a4c3;
+        --danger: #ff4b6b;
+        --radius-lg: 14px;
+        --radius-md: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+          sans-serif;
+        background: radial-gradient(circle at top left, #1b2140 0, #060712 45%);
+        color: var(--text-main);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-shell {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 18px 8px;
+        gap: 14px;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .app-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .app-title {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .app-title-pill {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border: 1px solid rgba(79, 140, 255, 0.35);
+      }
+
+      .app-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .app-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      button {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        background: var(--accent);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+      }
+
+      button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      button.secondary {
+        background: rgba(15, 18, 35, 0.9);
+        border-color: var(--border-subtle);
+        color: var(--text-muted);
+      }
+
+      button.pill-small {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: default;
+        transform: none;
+      }
+
+      button:not(:disabled):hover {
+        transform: translateY(-0.5px);
+        box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.4),
+          0 10px 25px rgba(5, 9, 30, 0.8);
+      }
+
+      button.secondary:not(:disabled):hover {
+        box-shadow: 0 0 0 1px rgba(103, 107, 148, 0.5);
+      }
+
+      .path-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 3px;
+        max-width: 100%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .layout {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+        gap: 14px;
+        min-height: 0;
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .panel {
+        background: var(--bg-elevated);
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(125, 133, 184, 0.25);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 0;
+        box-shadow: 0 18px 40px rgba(3, 3, 15, 0.85),
+          inset 0 1px 0 rgba(255, 255, 255, 0.01);
+      }
+
+      .panel-title {
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      .panel-title-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 0 4px var(--accent-soft);
+      }
+
+      .card {
+        border-radius: var(--radius-md);
+        background: var(--bg-card);
+        border: 1px solid rgba(46, 52, 90, 0.7);
+        padding: 10px 10px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+      }
+
+      .card-badge {
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: rgba(79, 140, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(79, 140, 255, 0.35);
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      input,
+      select {
+        padding: 6px 7px;
+        border-radius: 999px;
+        border: 1px solid rgba(51, 57, 98, 0.95);
+        background: #0b0d18;
+        color: var(--text-main);
+        font-size: 13px;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.6);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .row > label {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .checkbox-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 13px;
+      }
+
+      .checkbox-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border-subtle);
+        background: #0b0d18;
+        cursor: pointer;
+        color: var(--text-muted);
+        user-select: none;
+      }
+
+      .checkbox-pill input {
+        width: 14px;
+        height: 14px;
+        accent-color: var(--accent);
+      }
+
+      .checkbox-pill span {
+        font-size: 12px;
+      }
+
+      .inline-input-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .inline-input-row > label {
+        flex: 1;
+        min-width: 90px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        background: #050611;
+        color: var(--text-main);
+        border-radius: 10px;
+        border: 1px solid rgba(53, 61, 110, 0.9);
+        padding: 8px 9px;
+        font-family: "JetBrains Mono", "Consolas", monospace;
+        font-size: 11px;
+        resize: none;
+        outline: none;
+        white-space: pre;
+        overflow: auto;
+      }
+
+      textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.55);
+      }
+
+      .debug-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .debug-hint {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .tag {
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: rgba(160, 169, 236, 0.12);
+        color: #c5cbff;
+      }
+
+      .info-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .preset-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .preset-row button {
+        background: #111827;
+        border-color: rgba(55, 65, 81, 0.8);
+        color: #e5e7eb;
+      }
+
+      .preset-row button:not(:disabled):hover {
+        box-shadow: 0 0 0 1px rgba(79, 140, 255, 0.5);
+      }
+
+      .daytime-slider-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .daytime-slider-row small {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background: #020617;
+        outline: none;
+        border: 1px solid rgba(51, 57, 98, 0.95);
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.3);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.3);
+      }
+
+      .daytime-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: var(--text-muted);
+      }
+
+      /* 🔔 STATUS TOAST VISÍVEL */
+      .status-toast {
+        position: fixed;
+        top: 18px;
+        right: 18px;
+        z-index: 999;
+        min-width: 260px;
+        max-width: 360px;
+        background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95),
+          0 0 0 1px rgba(15, 23, 42, 0.9);
+        padding: 8px 10px;
+        color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.15s ease, transform 0.15s ease,
+          border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        pointer-events: none;
+      }
+
+      .status-toast-inner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 30%, #6b7280 0, #111827 60%);
+        box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.35);
+        flex-shrink: 0;
+      }
+
+      .status-text-block {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .status-title {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #e5e7eb;
+      }
+
+      .status-message {
+        font-size: 11px;
+        color: #cbd5f5;
+      }
+
+      .status-toast.status-ok {
+        border-color: rgba(34, 197, 94, 0.8);
+        box-shadow: 0 18px 40px rgba(22, 163, 74, 0.45),
+          0 0 0 1px rgba(22, 163, 74, 0.6);
+        background: radial-gradient(circle at top left, #166534 0, #022c22 55%);
+      }
+
+      .status-toast.status-ok .status-icon {
+        background: radial-gradient(circle at 30% 30%, #bbf7d0 0, #15803d 60%);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35);
+      }
+
+      .status-toast.status-error {
+        border-color: rgba(239, 68, 68, 0.9);
+        box-shadow: 0 18px 40px rgba(185, 28, 28, 0.55),
+          0 0 0 1px rgba(185, 28, 28, 0.7);
+        background: radial-gradient(circle at top left, #7f1d1d 0, #111827 55%);
+      }
+
+      .status-toast.status-error .status-icon {
+        background: radial-gradient(circle at 30% 30%, #fecaca 0, #b91c1c 60%);
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4);
+      }
+
+      .status-toast.status-idle {
+        border-color: rgba(148, 163, 184, 0.5);
+        background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+      }
+
+      .status-toast.hidden {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="app-header">
+        <div class="app-title-block">
+          <div class="app-title">
+            Editor de level.dat
+            <span class="app-title-pill">Minecraft Java • NBT</span>
+          </div>
+          <div class="app-subtitle">
+            Abra o <code>level.dat</code>, ajuste as configs do mundo e salve
+            com backup automático.
+          </div>
+          <div id="worldPath" class="path-label">
+            Nenhum arquivo selecionado
+          </div>
+        </div>
+
+        <div class="app-actions">
+          <button id="toggleReadonly" class="secondary pill-small">
+            🔓 Edição ativa
+          </button>
+          <button id="selectWorld">
+            <svg viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M4 5h4.5l1.7-2.3c.2-.4.6-.7 1-.7h6.8c.6 0 1 .4 1 1v3h1c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2zm8 4c-2.2 0-4 1.8-4 4s1.8 4 4 4s4-1.8 4-4s-1.8-4-4-4z"
+              />
+            </svg>
+            Selecionar level.dat
+          </button>
+          <button id="reload" class="secondary" disabled>↻ Recarregar</button>
+          <button id="save" class="secondary" disabled>
+            💾 Salvar alterações
+          </button>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- ESQUERDA: configs -->
+        <div class="panel">
+          <div class="panel-title">
+            <span class="panel-title-dot"></span>
+            CONFIGURAÇÕES DO MUNDO
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Geral</div>
+              <span class="card-badge">Básico</span>
+            </div>
+
+            <label>
+              Nome do mundo
+              <input
+                id="levelName"
+                type="text"
+                placeholder="Meu mundo incrível"
+              />
+            </label>
+
+            <div class="row">
+              <label>
+                Modo de jogo
+                <select id="gameMode">
+                  <option value="0">0 - Survival</option>
+                  <option value="1">1 - Creative</option>
+                  <option value="2">2 - Adventure</option>
+                  <option value="3">3 - Spectator</option>
+                </select>
+              </label>
+
+              <label>
+                Dificuldade
+                <select id="difficulty">
+                  <option value="0">0 - Peaceful</option>
+                  <option value="1">1 - Easy</option>
+                  <option value="2">2 - Normal</option>
+                  <option value="3">3 - Hard</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="daytime-slider-row">
+              <label>
+                Hora do dia (0–24000)
+                <input
+                  id="dayTime"
+                  type="number"
+                  min="0"
+                  max="24000"
+                  step="1"
+                />
+              </label>
+              <input
+                id="dayTimeSlider"
+                type="range"
+                min="0"
+                max="24000"
+                step="100"
+              />
+              <div class="daytime-labels">
+                <span>Manhã</span>
+                <span>Meio-dia</span>
+                <span>Tarde</span>
+                <span>Noite</span>
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <label class="checkbox-pill">
+                <input type="checkbox" id="hardcore" />
+                <span>Hardcore</span>
+              </label>
+
+              <label class="checkbox-pill">
+                <input type="checkbox" id="allowCommands" />
+                <span>Permitir comandos</span>
+              </label>
+
+              <label class="checkbox-pill">
+                <input type="checkbox" id="raining" />
+                <span>Chovendo</span>
+              </label>
+
+              <label class="checkbox-pill">
+                <input type="checkbox" id="thundering" />
+                <span>Tempestade</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Spawn</div>
+              <span class="card-badge">Posição</span>
+            </div>
+
+            <div class="inline-input-row">
+              <label>
+                Spawn X
+                <input id="spawnX" type="number" />
+              </label>
+              <label>
+                Spawn Y
+                <input id="spawnY" type="number" />
+              </label>
+              <label>
+                Spawn Z
+                <input id="spawnZ" type="number" />
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Seed e metadados</div>
+              <span class="card-badge">Somente mundo atual</span>
+            </div>
+
+            <label>
+              Seed do mundo (RandomSeed)
+              <input
+                id="worldSeed"
+                type="text"
+                placeholder="Deixe vazio para não mexer"
+              />
+            </label>
+
+            <div class="info-strip">
+              <span id="versionInfo"></span>
+              <span id="lastPlayedInfo"></span>
+              <span id="playTimeInfo"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Presets rápidos</div>
+              <span class="card-badge">1 clique</span>
+            </div>
+
+            <div class="preset-row">
+              <button id="presetCreativeDay" class="pill-small">
+                ☀️ Criativo, dia limpo
+              </button>
+              <button id="presetSurvivalNightStorm" class="pill-small">
+                🌩 Survival hard à noite
+              </button>
+              <button id="presetTestWorld" class="pill-small">
+                🧪 Mundo de teste
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIREITA: debug -->
+        <div class="panel">
+          <div class="panel-title">
+            <span class="panel-title-dot"></span>
+            JSON / NBT DEBUG
+          </div>
+
+          <div class="card" style="flex: 1; min-height: 0">
+            <div class="debug-top-row">
+              <div class="card-title">Estrutura completa</div>
+              <div class="debug-hint">
+                <span class="tag">Somente leitura</span>
+                &nbsp;Use para entender a estrutura do NBT.
+              </div>
+            </div>
+
+            <div style="flex: 1; min-height: 0; margin-top: 6px">
+              <textarea id="raw" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔔 STATUS VISÍVEL NO TOPO -->
+    <div id="statusToast" class="status-toast status-idle">
+      <div class="status-toast-inner">
+        <div id="statusIcon" class="status-icon"></div>
+        <div class="status-text-block">
+          <div id="statusTitle" class="status-title">Status</div>
+          <div id="statusMessage" class="status-message">
+            Nenhum arquivo carregado.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
