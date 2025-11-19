@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="./assets/Title.png" alt="NBT Control logo" width="128" />
+  <img src="./assets/Title.png" alt="NBT Control logo" width="512" />
 </p>
-
-<h1 align="center">NBT Control</h1>
 
 <p align="center">
   A simple Electron desktop app to inspect and edit <code>level.dat</code> files from Minecraft Java Edition worlds.
