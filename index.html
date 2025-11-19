@@ -32,6 +32,7 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
       }
 
       .app-shell {
@@ -508,9 +509,94 @@
         opacity: 0;
         transform: translateY(-6px);
       }
+
+      .titlebar {
+        -webkit-app-region: drag;
+        /* altura, fundo, etc do jeito que você quiser */
+      }
+
+      .win-btn {
+        -webkit-app-region: no-drag; /* botões NÃO arrastam */
+      }
+
+      /* barra de título custom */
+      .titlebar {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        background: #050816; /* casa com o resto do app */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        -webkit-app-region: drag; /* arrasta a janela por aqui */
+      }
+
+      /* lado esquerdo: bolinhas + título */
+      .titlebar-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* botões estilo macOS */
+      .win-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        border: none;
+        padding: 0;
+        margin: 0;
+        -webkit-app-region: no-drag; /* aqui não arrasta */
+        cursor: pointer;
+      }
+
+      /* ordem visual: vermelho, amarelo, verde */
+      .win-close {
+        background: #ff5f57;
+      }
+
+      .win-min {
+        background: #febc2e;
+        margin-left: 6px;
+      }
+
+      .win-max {
+        background: #28c840;
+        margin-left: 6px;
+      }
+
+      .titlebar-text {
+        font-size: 13px;
+        color: #e5e7eb;
+        font-weight: 500;
+        margin-left: 10px;
+      }
+
+      /* garante que o conteúdo começa logo abaixo da barra */
+      .app-shell {
+        height: calc(100vh - 32px);
+        /* se você já tem padding-top aqui, pode remover ou ajustar */
+      }
     </style>
   </head>
   <body>
+    <!-- BARRA DE TÍTULO CUSTOMIZADA -->
+
+    <div class="titlebar">
+      <div class="titlebar-left">
+        <button class="win-btn win-close" id="win-close"></button>
+        <button class="win-btn win-min" id="win-minimize"></button>
+        <button class="win-btn win-max" id="win-maximize"></button>
+
+        <span class="titlebar-text">NBT Control</span>
+      </div>
+      <div class="titlebar-right">
+        <!-- se quiser por versão, ícone, etc -->
+      </div>
+    </div>
+
+    <!-- APLICAÇÃO -->
+
     <div class="app-shell">
       <div class="app-header">
         <div class="app-title-block">

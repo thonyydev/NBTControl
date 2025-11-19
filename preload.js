@@ -6,3 +6,9 @@ contextBridge.exposeInMainWorld("mcApi", {
     ipcRenderer.invoke("read-leveldat", levelDatPath),
   writeLevelDat: (payload) => ipcRenderer.invoke("write-leveldat", payload),
 });
+
+contextBridge.exposeInMainWorld("windowControls", {
+  minimize: () => ipcRenderer.invoke("window:minimize"),
+  toggleMaximize: () => ipcRenderer.invoke("window:toggle-maximize"),
+  close: () => ipcRenderer.invoke("window:close"),
+});

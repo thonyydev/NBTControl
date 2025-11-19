@@ -40,9 +40,31 @@ const presetSurvivalNightStormBtn = document.getElementById(
 );
 const presetTestWorldBtn = document.getElementById("presetTestWorld");
 
+const winCloseBtn = document.getElementById("win-close");
+const winMinBtn = document.getElementById("win-minimize");
+const winMaxBtn = document.getElementById("win-maximize");
+
 let statusHideTimeout = null;
 let isReadonly = false;
 let hasWorldLoaded = false;
+
+if (winCloseBtn && window.windowControls) {
+  winCloseBtn.addEventListener("click", () => {
+    window.windowControls.close();
+  });
+}
+
+if (winMinBtn && window.windowControls) {
+  winMinBtn.addEventListener("click", () => {
+    window.windowControls.minimize();
+  });
+}
+
+if (winMaxBtn && window.windowControls) {
+  winMaxBtn.addEventListener("click", () => {
+    window.windowControls.toggleMaximize();
+  });
+}
 
 function setStatus(message, type = "idle") {
   statusMessage.textContent = message;

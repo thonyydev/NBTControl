@@ -9,8 +9,11 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 750,
+    width: 1280,
+    height: 720,
+    frame: false,
+    titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
+    backgroundColor: "#060712",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -39,7 +42,6 @@ function parseNbtAsync(buffer) {
     });
   });
 }
-
 
 ipcMain.handle("select-leveldat-file", async () => {
   const result = await dialog.showOpenDialog(mainWindow, {
@@ -99,4 +101,21 @@ ipcMain.handle("write-leveldat", async (event, { levelDatPath, newData }) => {
     console.error(err);
     throw new Error("Erro ao salvar o level.dat");
   }
+});
+
+ipcMain.handle("window:minimize", () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.handle("window:toggle-maximize", () => {
+  if (!mainWindow) return;
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+
+ipcMain.handle("window:close", () => {
+  if (mainWindow) mainWindow.close();
 });
