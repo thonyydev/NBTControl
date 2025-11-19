@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/title.png" alt="NBT Control logo" width="128" />
+  <img src="./assets/Title.png" alt="NBT Control logo" width="128" />
 </p>
 
 <h1 align="center">NBT Control</h1>
